@@ -1,0 +1,28 @@
+name: Deploy AWS - Projeto DevOps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: admin
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/admin/Projeto-Devops
+          git pull origin main
+          docker compose down || true
+          docker compose build
+          docker compose up -d
